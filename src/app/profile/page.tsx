@@ -1,14 +1,12 @@
-import jwt from "jsonwebtoken";
-import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { getCurrentUserFromDB } from "@/lib/currentUser";
 
 export default async function ProfilePage() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const user = await getCurrentUserFromDB();
 
-  const user = jwt.verify(token!, process.env.JWT_SECRET!) as {
-    username: string;
-    email: string;
-  };
+  if (!user) {
+    redirect("/login");
+  }
 
   return (
     <div>
