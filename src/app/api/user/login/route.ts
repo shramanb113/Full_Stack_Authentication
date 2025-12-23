@@ -24,7 +24,9 @@ export async function POST(request: NextRequest) {
     console.log("📩 Body:", { email, password: !!password });
 
     // mongodb doesnot send the password with just findone ... you need select
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email })
+      .select("+password")
+      .select("+username");
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 400 });
     }
@@ -44,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     const token = jwt.sign(
-      { id: user._id.toString(), email: user.email },
+      { id: user._id.toString(), email: user.email, username: user.username },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
